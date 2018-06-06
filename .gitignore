@@ -1,7 +1,7 @@
 
-# Created by https://www.gitignore.io/api/java,intellij+all
+# Created by https://www.gitignore.io/api/java,maven,intellij
 
-### Intellij+all ###
+### Intellij ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and Webstorm
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
@@ -55,18 +55,16 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
-### Intellij+all Patch ###
-# Ignores the whole .idea folder and all .iml files
-# See https://github.com/joeblau/gitignore.io/issues/186 and https://github.com/joeblau/gitignore.io/issues/360
+### Intellij Patch ###
+# Comment Reason: https://github.com/joeblau/gitignore.io/issues/186#issuecomment-215987721
 
-.idea/
+# *.iml
+# modules.xml
+# .idea/misc.xml
+# *.ipr
 
-# Reason: https://github.com/joeblau/gitignore.io/issues/186#issuecomment-249601023
-
-*.iml
-modules.xml
-.idea/misc.xml
-*.ipr
+# Sonarlint plugin
+.idea/sonarlint
 
 ### Java ###
 # Compiled class file
@@ -92,5 +90,19 @@ modules.xml
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
+### Maven ###
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
 
-# End of https://www.gitignore.io/api/java,intellij+all
+# Avoid ignoring Maven wrapper jar file (.jar files are usually ignored)
+!/.mvn/wrapper/maven-wrapper.jar
+
+
+# End of https://www.gitignore.io/api/java,maven,intellij
