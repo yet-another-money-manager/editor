@@ -6,7 +6,7 @@
 
     <groupId>io.yamm</groupId>
     <artifactId>yamm-editor</artifactId>
-    <version>0.1-alpha.1</version>
+    <version>0.1-alpha.2</version>
 
     <dependencies>
         <dependency>
