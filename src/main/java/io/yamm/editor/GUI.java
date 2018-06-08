@@ -3,15 +3,22 @@ package io.yamm.editor;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
+import java.awt.*;
 import java.io.*;
 
-public class GUI extends Application  {
+public class GUI extends Application implements UserInterface {
+    private Editor editor = new Editor(this);
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -25,6 +32,9 @@ public class GUI extends Application  {
         // create text area, add to GUI
         TextArea textArea = new TextArea();
         root.setCenter(textArea);
+
+        // add listener to text area
+        textArea.textProperty().addListener((observable, oldValue, newValue) -> editor.setContent(newValue));
 
         // set up menu bar and menus
         MenuBar menuBar = new MenuBar();
@@ -43,7 +53,7 @@ public class GUI extends Application  {
         menuItems[0][3] = new MenuItem("Save As");
         menuItems[0][3].setDisable(true);
         menuItems[0][4] = new MenuItem("Exit");
-        menuItems[0][4].setOnAction(t -> System.exit(0));
+        menuItems[0][4].setOnAction(t -> editor.exit());
 
         // set up edit menu
         menus[1] = new Menu("Edit");
@@ -75,8 +85,7 @@ public class GUI extends Application  {
         menus[2] = new Menu("Format");
         menuItems[2] = new MenuItem[2];
         menuItems[2][0] = new CheckMenuItem("Word Wrap");
-        ((CheckMenuItem) menuItems[2][0]).selectedProperty().addListener(
-                (ov, oldValue, newValue) -> textArea.setWrapText(newValue));
+        ((CheckMenuItem) menuItems[2][0]).selectedProperty().addListener((ov, oldValue, newValue) -> textArea.setWrapText(newValue));
         menuItems[2][1] = new MenuItem("Font");
         menuItems[2][1].setDisable(true);
 
@@ -84,7 +93,14 @@ public class GUI extends Application  {
         menus[3] = new Menu("Help");
         menuItems[3] = new MenuItem[2];
         menuItems[3][0] = new MenuItem("FAQ");
-        menuItems[3][0].setDisable(true);
+        menuItems[3][0].setOnAction(t -> {
+            try {
+                // TODO: change this to a FAQ specific to YAMM Editor
+                Desktop.getDesktop().browse(java.net.URI.create("https://yamm.io/faq"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
         menuItems[3][1] = new MenuItem("About");
         menuItems[3][1].setOnAction(t -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
