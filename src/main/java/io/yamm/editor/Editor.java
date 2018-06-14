@@ -9,10 +9,10 @@ class Editor {
     private String content = "";
     private boolean contentChangedSinceSave = false;
     private File file = null;
-    private UserInterface userInterface;
+    private UserInterface ui;
 
-    Editor(UserInterface userInterface) {
-        this.userInterface = userInterface;
+    Editor(UserInterface ui) {
+        this.ui = ui;
     }
 
     void exit() {
@@ -27,18 +27,31 @@ class Editor {
         }
 
         // write content to file
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-            writer.write(content);
-            writer.close();
-        } catch (IOException e) {
-            // TODO: display exception through the GUI (see http://code.makery.ch/blog/javafx-dialogs-official/#exception-dialog)
-            e.printStackTrace();
+        if (contentChangedSinceSave) {
+            try {
+                BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+                writer.write(content);
+                contentChangedSinceSave = false;
+                writer.close();
+            } catch (IOException e) {
+                // TODO: display exception through the GUI (see http://code.makery.ch/blog/javafx-dialogs-official/#exception-dialog)
+                e.printStackTrace();
+            }
         }
     }
 
     void saveAs() {
-        file = userInterface.showSaveFileChooser("Save As");
+        // ask the user for a file to save as
+        File newFile = ui.showSaveFileChooser("Save As");
+
+        // if the user clicked cancel, stop here
+        if (file == null) {
+            return;
+        }
+
+        // flag unsaved changes to force a save, and actually save
+        file = newFile;
+        contentChangedSinceSave = true;
         save();
     }
 
