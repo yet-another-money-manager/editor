@@ -160,11 +160,11 @@ public class GUI extends Application implements UserInterface {
         return selectedFile;
     }
 
-    public File showOpenFileChooser(String title) {
+    public File showFileChooserOpen(String title) {
         return showFileChooser(FileChooserAction.OPEN, title);
     }
 
-    public File showSaveFileChooser(String title) {
+    public File showFileChooserSave(String title) {
         return showFileChooser(FileChooserAction.SAVE, title);
     }
 }

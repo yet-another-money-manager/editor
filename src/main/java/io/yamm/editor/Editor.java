@@ -42,7 +42,7 @@ class Editor {
 
     void saveAs() {
         // ask the user for a file to save as
-        File newFile = ui.showSaveFileChooser("Save As");
+        File newFile = ui.showFileChooserSave("Save As");
 
         // if the user clicked cancel, stop here
         if (file == null) {
