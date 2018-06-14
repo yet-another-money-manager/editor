@@ -16,6 +16,28 @@ class Editor {
     }
 
     void exit() {
+        if (contentChangedSinceSave) {
+            // ask the user if they want to save changes
+            String result = ui.showDialogWarning(
+                    "Unsaved Changes",
+                    "You have unsaved changes!",
+                    "You have unsaved changes - would you like to save them now?",
+                    new String[]{"Yes", "No", "Cancel"});
+
+            // if the user asked not to exit, abort here
+            if (result == null || result.equals("Cancel")) {
+                return;
+            }
+
+            // if the user asked to save, do it here
+            else if (result.equals("Yes")) {
+                save();
+            }
+
+            // if the user asked not to save, we don't need to do anything!
+        }
+
+        // if we get this far, actually exit
         System.exit(0);
     }
 
@@ -45,7 +67,7 @@ class Editor {
         File newFile = ui.showFileChooserSave("Save As");
 
         // if the user clicked cancel, stop here
-        if (file == null) {
+        if (newFile == null) {
             return;
         }
 

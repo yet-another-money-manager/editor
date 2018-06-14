@@ -16,6 +16,7 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.awt.*;
 import java.io.*;
+import java.util.Optional;
 
 public class GUI extends Application implements UserInterface {
     private Editor editor = new Editor(this);
@@ -142,6 +143,27 @@ public class GUI extends Application implements UserInterface {
         }
     }
 
+    public String showDialogWarning(String title, String header, String content, String[] options) {
+        // create the alert, set the basic information
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+
+        // create & set the options
+        ButtonType[] buttons = new ButtonType[options.length];
+        for (int i = 0; i < options.length; i++) {
+            buttons[i] = new ButtonType(options[i]);
+        }
+        alert.getButtonTypes().setAll(buttons);
+
+        // show the alert
+        Optional<ButtonType> result = alert.showAndWait();
+
+        // return the result (or null if e.g. the user pressed close)
+        return result.map(ButtonType::getText).orElse(null);
+    }
+
     private File showFileChooser(FileChooserAction action, String title) {
         FileChooser fileChooser = new FileChooser();
 
@@ -150,7 +172,7 @@ public class GUI extends Application implements UserInterface {
             fileChooser.setTitle(title);
         }
 
-        // show the approrpiate FileChooser dialog, return the selected file
+        // show the appropriate FileChooser dialog, return the selected file
         File selectedFile = null;
         if (action == FileChooserAction.OPEN) {
             selectedFile = fileChooser.showOpenDialog(null);
