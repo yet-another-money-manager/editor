@@ -10,6 +10,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
@@ -30,6 +31,12 @@ public class GUI extends Application implements UserInterface {
         // set up GUI
         primaryStage.setTitle("Untitled - YAMM Editor");
         BorderPane root = new BorderPane();
+
+        // add listener to window close button
+        primaryStage.setOnCloseRequest((WindowEvent e) -> {
+            editor.exit();
+            e.consume();
+        });
 
         // create text area, add to GUI
         TextArea textArea = new TextArea();
