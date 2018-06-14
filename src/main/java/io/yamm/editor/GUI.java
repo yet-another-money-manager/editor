@@ -8,6 +8,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
@@ -49,9 +50,9 @@ public class GUI extends Application implements UserInterface {
         menuItems[0][1] = new MenuItem("Open");
         menuItems[0][1].setDisable(true);
         menuItems[0][2] = new MenuItem("Save");
-        menuItems[0][2].setDisable(true);
+        menuItems[0][2].setOnAction(t -> editor.save());
         menuItems[0][3] = new MenuItem("Save As");
-        menuItems[0][3].setDisable(true);
+        menuItems[0][3].setOnAction(t -> editor.saveAs());
         menuItems[0][4] = new MenuItem("Exit");
         menuItems[0][4].setOnAction(t -> editor.exit());
 
@@ -139,5 +140,31 @@ public class GUI extends Application implements UserInterface {
         } catch (IOException | NullPointerException | XmlPullParserException e) {
             return "unknown";
         }
+    }
+
+    private File showFileChooser(FileChooserAction action, String title) {
+        FileChooser fileChooser = new FileChooser();
+
+        // set the FileChooser title, if applicable
+        if (title != null) {
+            fileChooser.setTitle(title);
+        }
+
+        // show the approrpiate FileChooser dialog, return the selected file
+        File selectedFile = null;
+        if (action == FileChooserAction.OPEN) {
+            selectedFile = fileChooser.showOpenDialog(null);
+        } else if (action == FileChooserAction.SAVE) {
+            selectedFile = fileChooser.showSaveDialog(null);
+        }
+        return selectedFile;
+    }
+
+    public File showOpenFileChooser(String title) {
+        return showFileChooser(FileChooserAction.OPEN, title);
+    }
+
+    public File showSaveFileChooser(String title) {
+        return showFileChooser(FileChooserAction.SAVE, title);
     }
 }
