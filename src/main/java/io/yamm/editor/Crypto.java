@@ -8,6 +8,8 @@ import java.security.Key;
 import java.util.Arrays;
 
 public class Crypto {
+    // TODO: key management
+
     public static byte[] encrypt(byte[] messsage) throws GeneralSecurityException {
         Key secretKey = KeyFactory.AES.randomKey(256);
         Encryptor encryptor = new Encryptor(secretKey, "AES/GCM/NoPadding", 16, 128);

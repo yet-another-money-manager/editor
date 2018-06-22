@@ -22,6 +22,7 @@ import java.util.Optional;
 
 public class GUI extends Application implements UserInterface {
     private Editor editor = new Editor(this);
+    private TextArea textArea = new TextArea();
 
     public static void main(String[] args) {
         launch(args);
@@ -39,8 +40,7 @@ public class GUI extends Application implements UserInterface {
             e.consume();
         });
 
-        // create text area, add to GUI
-        TextArea textArea = new TextArea();
+        // add text area to GUI
         root.setCenter(textArea);
 
         // add listener to text area
@@ -55,11 +55,21 @@ public class GUI extends Application implements UserInterface {
         menus[0] = new Menu("File");
         menuItems[0] = new MenuItem[6];
         menuItems[0][0] = new MenuItem("New");
-        menuItems[0][0].setDisable(true);
+        menuItems[0][0].addEventHandler(ActionEvent.ACTION, (e)-> {
+            editor = new Editor(this);
+            textArea.setText("");
+            updateTitle(primaryStage);
+        });
         menuItems[0][1] = new MenuItem("Open");
-        menuItems[0][1].setDisable(true);
+        menuItems[0][1].addEventHandler(ActionEvent.ACTION, (e)-> {
+            editor.open();
+            updateTitle(primaryStage);
+        });
         menuItems[0][2] = new MenuItem("Save");
-        menuItems[0][2].setOnAction(t -> editor.save());
+        menuItems[0][2].addEventHandler(ActionEvent.ACTION, (e)-> {
+            editor.save();
+            updateTitle(primaryStage);
+        });
         menuItems[0][3] = new MenuItem("Save As");
         menuItems[0][3].addEventHandler(ActionEvent.ACTION, (e)-> {
             editor.saveAs();
@@ -154,6 +164,10 @@ public class GUI extends Application implements UserInterface {
         } catch (IOException | NullPointerException | XmlPullParserException e) {
             return "unknown";
         }
+    }
+
+    public void setContent(String content) {
+        textArea.setText(content);
     }
 
     private String showDialog(Alert.AlertType type, String title, String header, String content, String[] options) {

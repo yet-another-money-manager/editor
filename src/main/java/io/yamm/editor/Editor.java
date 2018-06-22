@@ -14,7 +14,7 @@ class Editor {
         this.ui = ui;
     }
 
-    void exit() {
+    private boolean continueUnsavedChanges() {
         if (contentChangedSinceSave) {
             // ask the user if they want to save changes
             String result = ui.showDialogWarning(
@@ -25,7 +25,7 @@ class Editor {
 
             // if the user asked not to exit, abort here
             if (result == null || result.equals("Cancel")) {
-                return;
+                return false;
             }
 
             // if the user asked to save, do it here
@@ -35,9 +35,13 @@ class Editor {
 
             // if the user asked not to save, we don't need to do anything!
         }
+        return true;
+    }
 
-        // if we get this far, actually exit
-        System.exit(0);
+    void exit() {
+        if (continueUnsavedChanges()) {
+            System.exit(0);
+        }
     }
 
     String getFileName() {
@@ -45,6 +49,52 @@ class Editor {
             return file.getName();
         } else {
             return "Untitled";
+        }
+    }
+
+    void open() {
+        if (continueUnsavedChanges()) {
+            // ask the user for a file to open
+            File file = ui.showFileChooserOpen("Open");
+
+            // if the user clicked cancel, stop here
+            if (file == null) {
+                return;
+            }
+
+            // load the content
+            this.file = file;
+            try {
+                byte[] buffer = new byte[Math.toIntExact(file.length())];
+                FileInputStream inputStream = new FileInputStream(file);
+                //noinspection ResultOfMethodCallIgnored
+                inputStream.read(buffer);
+                inputStream.close();
+                content = new String(buffer);
+            } catch (FileNotFoundException e) {
+                ui.showDialogError(
+                        "File Not Found",
+                        "File Not Found",
+                        "The requested file disappeared before it could be opened.",
+                        new String[]{"OK"});
+            } catch (IOException e) {
+                // TODO: display exception through the UI (see http://code.makery.ch/blog/javafx-dialogs-official/#exception-dialog)
+                e.printStackTrace();
+            } catch (ArithmeticException e) {
+                ui.showDialogError(
+                        "2GB Limit Exceeded",
+                        "2GB Limit Exceeded",
+                        "This file is larger than the 2GB limit, and so cannot be opened.",
+                        new String[]{"OK"});
+            }
+
+            // TODO: decrypt the content if applicable
+
+            // set the content in the UI
+            ui.setContent(content);
+
+            // flag no unsaved changes
+            contentChangedSinceSave = false;
         }
     }
 
@@ -82,15 +132,15 @@ class Editor {
 
     void saveAs() {
         // ask the user for a file to save as
-        File newFile = ui.showFileChooserSave("Save As");
+        File file = ui.showFileChooserSave("Save As");
 
         // if the user clicked cancel, stop here
-        if (newFile == null) {
+        if (file == null) {
             return;
         }
 
         // flag unsaved changes to force a save, and actually save
-        file = newFile;
+        this.file = file;
         contentChangedSinceSave = true;
         save();
     }
