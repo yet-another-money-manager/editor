@@ -1,13 +1,12 @@
 package io.yamm.editor;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.security.GeneralSecurityException;
 
 class Editor {
     private String content = "";
     private boolean contentChangedSinceSave = false;
+    private boolean encryptedMode = false;
     private File file = null;
     private UserInterface ui;
 
@@ -41,6 +40,14 @@ class Editor {
         System.exit(0);
     }
 
+    String getFileName() {
+        if (file != null) {
+            return file.getName();
+        } else {
+            return "Untitled";
+        }
+    }
+
     void save() {
         // check that a save file has been selected
         if (file == null) {
@@ -50,16 +57,27 @@ class Editor {
 
         // write content to file
         if (contentChangedSinceSave) {
-            try {
-                BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-                writer.write(content);
-                contentChangedSinceSave = false;
-                writer.close();
+            try (FileOutputStream stream = new FileOutputStream(file)) {
+                byte[] bytes;
+                if (encryptedMode) {
+                    bytes = Crypto.encrypt(content.getBytes());
+                } else {
+                    bytes = content.getBytes();
+                }
+                stream.write(bytes);
             } catch (IOException e) {
-                // TODO: display exception through the GUI (see http://code.makery.ch/blog/javafx-dialogs-official/#exception-dialog)
+                // TODO: display exception through the UI (see http://code.makery.ch/blog/javafx-dialogs-official/#exception-dialog)
                 e.printStackTrace();
+            } catch (GeneralSecurityException e) {
+                ui.showDialogError(
+                        "Security Exception",
+                        "Security Exception",
+                        "An unknown security exception occurred. This file has not been saved.",
+                        new String[]{"OK"});
             }
         }
+
+        contentChangedSinceSave = false;
     }
 
     void saveAs() {
@@ -80,5 +98,10 @@ class Editor {
     void setContent(String content) {
         contentChangedSinceSave = true;
         this.content = content;
+    }
+
+    void toggleEncryptedMode() {
+        contentChangedSinceSave = true;
+        encryptedMode = !encryptedMode;
     }
 }

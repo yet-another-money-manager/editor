@@ -1,6 +1,7 @@
 package io.yamm.editor;
 
 import javafx.application.Application;
+import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Menu;
@@ -29,7 +30,7 @@ public class GUI extends Application implements UserInterface {
     @Override
     public void start(Stage primaryStage) {
         // set up GUI
-        primaryStage.setTitle("Untitled - YAMM Editor");
+        updateTitle(primaryStage);
         BorderPane root = new BorderPane();
 
         // add listener to window close button
@@ -52,7 +53,7 @@ public class GUI extends Application implements UserInterface {
 
         // set up file menu
         menus[0] = new Menu("File");
-        menuItems[0] = new MenuItem[5];
+        menuItems[0] = new MenuItem[6];
         menuItems[0][0] = new MenuItem("New");
         menuItems[0][0].setDisable(true);
         menuItems[0][1] = new MenuItem("Open");
@@ -60,9 +61,14 @@ public class GUI extends Application implements UserInterface {
         menuItems[0][2] = new MenuItem("Save");
         menuItems[0][2].setOnAction(t -> editor.save());
         menuItems[0][3] = new MenuItem("Save As");
-        menuItems[0][3].setOnAction(t -> editor.saveAs());
-        menuItems[0][4] = new MenuItem("Exit");
-        menuItems[0][4].setOnAction(t -> editor.exit());
+        menuItems[0][3].addEventHandler(ActionEvent.ACTION, (e)-> {
+            editor.saveAs();
+            updateTitle(primaryStage);
+        });
+        menuItems[0][4] = new CheckMenuItem("Encrypted Mode");
+        ((CheckMenuItem) menuItems[0][4]).selectedProperty().addListener((ov, oldValue, newValue) -> editor.toggleEncryptedMode());
+        menuItems[0][5] = new MenuItem("Exit");
+        menuItems[0][5].setOnAction(t -> editor.exit());
 
         // set up edit menu
         menus[1] = new Menu("Edit");
@@ -150,9 +156,9 @@ public class GUI extends Application implements UserInterface {
         }
     }
 
-    public String showDialogWarning(String title, String header, String content, String[] options) {
+    private String showDialog(Alert.AlertType type, String title, String header, String content, String[] options) {
         // create the alert, set the basic information
-        Alert alert = new Alert(Alert.AlertType.WARNING);
+        Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setHeaderText(header);
         alert.setContentText(content);
@@ -169,6 +175,14 @@ public class GUI extends Application implements UserInterface {
 
         // return the result (or null if e.g. the user pressed close)
         return result.map(ButtonType::getText).orElse(null);
+    }
+
+    public String showDialogError(String title, String header, String content, String[] options) {
+        return showDialog(Alert.AlertType.ERROR, title, header, content, options);
+    }
+
+    public String showDialogWarning(String title, String header, String content, String[] options) {
+        return showDialog(Alert.AlertType.WARNING, title, header, content, options);
     }
 
     private File showFileChooser(FileChooserAction action, String title) {
@@ -195,5 +209,9 @@ public class GUI extends Application implements UserInterface {
 
     public File showFileChooserSave(String title) {
         return showFileChooser(FileChooserAction.SAVE, title);
+    }
+
+    private void updateTitle(Stage stage) {
+        stage.setTitle(editor.getFileName() + " - YAMM Editor");
     }
 }

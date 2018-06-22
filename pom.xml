@@ -14,6 +14,11 @@
             <artifactId>maven-model</artifactId>
             <version>3.0.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.encryptor4j</groupId>
+            <artifactId>encryptor4j</artifactId>
+            <version>0.1.1</version>
+        </dependency>
     </dependencies>
 
     <build>
